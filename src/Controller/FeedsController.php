@@ -143,5 +143,257 @@ final class FeedsController extends AbstractController
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+
+    #[Route('', name: 'create', methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/feeds',
+        summary: 'Crea un feed',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                type: 'object',
+                properties: [
+                    new OA\Property(property: 'title', type: 'string', description: 'Titulo del feed'),
+                    new OA\Property(property: 'url', type: 'string', description: 'Url del feed'),
+                    new OA\Property(property: 'imageUrl', type: 'string', description: 'Url de la imagen del feed'),
+                    new OA\Property(property: 'source', type: 'string', description: 'Fuente del feed'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'El Feed ha sido correctamente creado'),
+            new OA\Response(response: 409, description: 'El feed esta duplicado, no se ha creado'),
+            new OA\Response(response: 500, description: 'Error al crear el feed'),
+            new OA\Response(
+                response: 400,
+                description: 'Error en los parametros de entradas',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string'),
+                        new OA\Property(property: 'code', type: 'integer'),
+                    ],
+                    examples: [
+                        new OA\Examples(
+                            'El título no puede estar vacío',
+                            'El título no puede estar vacío',
+                            null,
+                            ['error' => 'El título no puede estar vacío La URL no puede estar vacía', 'code' => 404]
+                        ),
+                    ]
+                )
+            ),
+        ],
+        tags: ['Feeds']
+    )]
+    public function create(Request $request): JsonResponse
+    {
+        try {
+            $data = json_decode($request->getContent(), true);
+
+            if (JSON_ERROR_NONE !== json_last_error()) {
+                return $this->json([
+                    'success' => false,
+                    'error' => 'JSON incorrecto',
+                    'message' => json_last_error_msg(),
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            $dto = $this->serializer->denormalize(
+                $data,
+                CreateFeedDTO::class
+            );
+
+
+            $errors = $this->validator->validate($dto);
+
+
+            if (count($errors) > 0) {
+                $errorMessages = [];
+                foreach ($errors as $error) {
+                    $errorMessages[] = $error->getMessage();
+                }
+
+                return $this->json(['error' => implode(' ', $errorMessages)], Response::HTTP_BAD_REQUEST);
+            }
+
+
+            $feed = $this->feedsService->createFeed($dto);
+
+            return $this->json([
+                'success' => true,
+                'message' => 'El Feed ha sido correctamente creado',
+                'data' => $feed->toArray(),
+            ], Response::HTTP_CREATED);
+        } catch (DuplicateFeedException $e) {
+            return $this->json([
+                'success' => false,
+                'error' => 'El feed esta duplicado, no se ha creado',
+                'message' => $e->getMessage(),
+            ], Response::HTTP_CONFLICT);
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'error' => 'Error al crear el feed',
+                'message' => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    #[Route('/{id}', name: 'delete', requirements: ['id' => '\d+'], methods: ['DELETE'])]
+    #[OA\Delete(
+        path: '/api/feeds/{id}',
+        summary: 'Elimina un feed',
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                description: 'id del feed',
+                required: false,
+                schema: new OA\Schema(type: 'int')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'El feed ha sido correctamente eliminado'),
+            new OA\Response(response: 404, description: 'Feed no encontrado'),
+            new OA\Response(response: 500, description: 'Error al eliminar el feed'),
+        ],
+        tags: ['Feeds']
+    )]
+    public function delete(int $id): JsonResponse
+    {
+        try {
+            $this->feedsService->deleteFeed($id);
+
+            return $this->json([
+                'success' => true,
+                'message' => 'El feed ha sido correctamente eliminado',
+            ]);
+        } catch (FeedNotFoundException $e) {
+            return $this->json([
+                'success' => false,
+                'error' => 'Feed no encontrado',
+                'message' => $e->getMessage(),
+            ], Response::HTTP_NOT_FOUND);
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'error' => 'Error al eliminar el feed',
+                'message' => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    #[Route('/{id}', name: 'update', requirements: ['id' => '\d+'], methods: ['PUT'])]
+    #[OA\Put(
+        path: '/api/feeds/{id}',
+        summary: 'Actualiza un feed',
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                description: 'id del feed',
+                required: false,
+                schema: new OA\Schema(type: 'int')
+            ),
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                type: 'object',
+                properties: [
+                    new OA\Property(property: 'title', type: 'string', description: 'Titulo del feed'),
+                    new OA\Property(property: 'url', type: 'string', description: 'Url del feed'),
+                    new OA\Property(property: 'imageUrl', type: 'string', description: 'Url de la imagen del feed'),
+                    new OA\Property(property: 'source', type: 'string', description: 'Fuente del feed'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'El feed ha sido correctamente actualizado'),
+            new OA\Response(response: 404, description: 'Feed no encontrado'),
+            new OA\Response(response: 409, description: 'Esa url ya existe en otro feed, no se ha podido actualizar'),
+            new OA\Response(response: 500, description: 'Error al actualizar el feed'),
+            new OA\Response(
+                response: 400,
+                description: 'Error en los parametros de entradas',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string'),
+                        new OA\Property(property: 'code', type: 'integer'),
+                    ],
+                    examples: [
+                        new OA\Examples(
+                            'El título no puede estar vacío',
+                            'El título no puede estar vacío',
+                            null,
+                            ['error' => 'El título no puede estar vacío La URL no puede estar vacía', 'code' => 404]
+                        ),
+                    ]
+                )
+            ),
+        ],
+        tags: ['Feeds']
+    )]
+    public function update(int $id, Request $request): JsonResponse
+    {
+        try {
+            $data = json_decode($request->getContent(), true);
+
+            if (JSON_ERROR_NONE !== json_last_error()) {
+                return $this->json([
+                    'success' => false,
+                    'error' => 'JSON incorrecto',
+                    'message' => json_last_error_msg(),
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            $dto = $this->serializer->denormalize(
+                $data,
+                UpdateFeedDTO::class,
+            );
+
+
+            $errors = $this->validator->validate($dto);
+
+            if (count($errors) > 0) {
+                $errorMessages = [];
+                foreach ($errors as $error) {
+                    $errorMessages[] = $error->getMessage();
+                }
+
+                return $this->json(['error' => implode(' ', $errorMessages)], Response::HTTP_BAD_REQUEST);
+            }
+
+            $feed = $this->feedsService->updateFeed($id, $dto);
+
+            return $this->json([
+                'success' => true,
+                'message' => 'El feed ha sido correctamente actualizado',
+                'data' => $feed->toArray(),
+            ]);
+        } catch (FeedNotFoundException $e) {
+            return $this->json([
+                'success' => false,
+                'error' => 'Feed no encontrado',
+                'message' => $e->getMessage(),
+            ], Response::HTTP_NOT_FOUND);
+        } catch (DuplicateFeedException $e) {
+            return $this->json([
+                'success' => false,
+                'error' => 'Esa url ya existe en otro feed, no se ha podido actualizar',
+                'message' => $e->getMessage(),
+            ], Response::HTTP_CONFLICT);
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'error' => 'Error al actualizar el feed',
+                'message' => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }    
 }
 

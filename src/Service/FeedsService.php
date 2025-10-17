@@ -60,6 +60,97 @@ final class FeedsService
 
         return $this->mapToResponseDTO($feed);
     }
+
+
+    public function createFeed(CreateFeedDTO $dto): FeedResponseDTO
+    {
+        $existingFeed = $this->feedsRepository->findByUrl(
+            $dto->url
+        );
+
+        if ($existingFeed) {
+            $this->logger->warning('Duplicate feed detected', [
+                'url' => $dto->url,
+            ]);
+            throw new DuplicateFeedException('Ya existe un feed con esa url');
+        }
+
+        $feed = new Feed();
+        $feed->setTitle($dto->title)
+            ->setUrl($dto->url)
+            ->setImageUrl($dto->imageUrl)
+            ->setSource($dto->source)
+            ->setUpdatedAt(new \DateTime())
+            ->setCreatedAt(new \DateTime());
+
+        $this->feedsRepository->save($feed, true);
+
+        $this->logger->info('Feed created', ['id' => $feed->getId()]);
+
+        return $this->mapToResponseDTO($feed);
+    }
+
+    public function updateFeed(int $id, UpdateFeedDTO $dto): FeedResponseDTO
+    {
+        /** @var ?Feed @feed */
+        $feed = $this->feedsRepository->find($id);
+
+        if (!$feed) {
+            $this->logger->warning('Feed not found for update', ['id' => $id]);
+            throw new FeedNotFoundException("El feed con id {$id} no ha sido encontrado");
+        }
+
+        if (null !== $dto->title) {
+            $feed->setTitle($dto->title);
+        }
+
+
+        if (null !== $dto->url) {
+            // Check if new URL creates a duplicate
+            if ($dto->url !== $feed->getUrl()) {
+                $existingFeed = $this->feedsRepository->findByUrl(
+                    $dto->url
+                );
+
+                if ($existingFeed && $existingFeed->getId() !== $id) {
+                    throw new DuplicateFeedException('Ya existe un feed con esa url');
+                }
+            }
+            $feed->setUrl($dto->url);
+        }
+
+        if (null !== $dto->imageUrl) {
+            $feed->setImageUrl($dto->imageUrl);
+        }
+
+        if (null !== $dto->source) {
+            $feed->setSource($dto->source);
+        }
+
+        $feed->setUpdatedAt(new \DateTime());
+
+
+        $this->feedsRepository->save($feed, true);
+
+        $this->logger->info('Feed updated', ['id' => $id]);
+
+        return $this->mapToResponseDTO($feed);
+    }
+
+    public function deleteFeed(int $id): void
+    {
+        /** @var ?Feed @feed */
+        $feed = $this->feedsRepository->find($id);
+
+        if (!$feed) {
+            $this->logger->warning('Feed not found for deletion', ['id' => $id]);
+            throw new FeedNotFoundException("El feed con id {$id} no ha sido encontrado");
+        }
+
+        $this->feedsRepository->remove($feed, true);
+
+        $this->logger->info('Feed deleted', ['id' => $id]);
+    }    
         
     private static function mapToResponseDTO(Feed $feed): FeedResponseDTO
     {
