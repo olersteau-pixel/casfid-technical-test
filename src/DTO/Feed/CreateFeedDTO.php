@@ -1,0 +1,32 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\DTO\Feed;
+
+use App\Validator\ValidFeedSource;
+use Symfony\Component\Validator\Constraints as Assert;
+
+final class CreateFeedDTO
+{
+    #[Assert\NotBlank(message: 'El título no puede estar vacío')]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: 'El título debe tener al menos {{ limit }} caracteres',
+        maxMessage: 'El título no puede exceder {{ limit }} caracteres'
+    )]
+    public string $title;
+
+    #[Assert\NotBlank(message: 'La URL no puede estar vacía')]
+    #[Assert\Url(message: 'La URL no es válida', requireTld: true)]
+    public string $url;
+
+    #[Assert\NotBlank(message: 'La fuente no puede estar vacía')]
+    #[ValidFeedSource]
+    public string $source;
+
+    #[Assert\Url(message: 'La URL de la imagen no es válida', requireTld: true)]
+    public ?string $imageUrl = null;
+
+}
