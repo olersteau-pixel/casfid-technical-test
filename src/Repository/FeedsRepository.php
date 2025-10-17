@@ -64,4 +64,14 @@ class FeedsRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }    
+
+
+    public function remove(Feed $feed, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($feed);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }    
 }
