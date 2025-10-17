@@ -19,3 +19,17 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
     Symfony\Component\Serializer\Normalizer\ObjectNormalizer: ~
+
+    # Scrapers - Tagged para inyección automática
+    App\Service\Scraper\ElPaisScraper:
+        tags: ['app.feeds_scraper']
+
+    App\Service\Scraper\ElMundoScraper:
+        tags: ['app.feeds_scraper']
+
+    # Servicio principal que recibe todos los scrapers
+    App\Service\FeedsScraperService:
+        arguments:
+            $scrapers: !tagged_iterator app.feeds_scraper
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones        
