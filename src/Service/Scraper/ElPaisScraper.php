@@ -90,7 +90,7 @@ final class ElPaisScraper implements ScraperInterface
                     if (count($feeds) >= $limit) {
                         break 2;
                     }
- 
+
                     $title = trim($node->textContent);
 
                     $url = $node->getAttribute('href');
@@ -138,7 +138,6 @@ final class ElPaisScraper implements ScraperInterface
         return $feeds;
     }
 
-
     private function extractImage(\DOMNode|\DOMNameSpaceNode $node): ?string
     {
         $parent = $node->parentNode;
@@ -154,7 +153,7 @@ final class ElPaisScraper implements ScraperInterface
             $imgNodes = $xpath->query('.//img', $parent);
 
             if ($imgNodes && $imgNodes->length > 0) {
-                /** @var \DOMElement  $img */
+                /** @var \DOMElement $img */
                 $img = $imgNodes->item(0);
                 $src = $img->getAttribute('src') ?:
                        $img->getAttribute('data-src') ?:

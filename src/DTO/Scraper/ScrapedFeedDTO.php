@@ -11,7 +11,8 @@ final class ScrapedFeedDTO
         public readonly string $url,
         public readonly string $source,
         public readonly ?string $imageUrl = null,
-    ) {}
+    ) {
+    }
 
     public function getTitle(): string
     {
@@ -22,14 +23,14 @@ final class ScrapedFeedDTO
     {
         return $this->url;
     }
-    
+
     public function getSource(): string
     {
         return $this->source;
     }
-    
+
     public function getImageUrl(): ?string
     {
         return $this->imageUrl;
-    }    
+    }
 }

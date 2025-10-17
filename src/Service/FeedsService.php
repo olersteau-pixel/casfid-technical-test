@@ -61,7 +61,6 @@ final class FeedsService
         return $this->mapToResponseDTO($feed);
     }
 
-
     public function createFeed(CreateFeedDTO $dto): FeedResponseDTO
     {
         $existingFeed = $this->feedsRepository->findByUrl(
@@ -150,11 +149,11 @@ final class FeedsService
         $this->feedsRepository->remove($feed, true);
 
         $this->logger->info('Feed deleted', ['id' => $id]);
-    }    
-        
+    }
+
     private static function mapToResponseDTO(Feed $feed): FeedResponseDTO
     {
-        $sourceEnum = FeedSource::tryFrom($feed->getSource());
+        $sourceEnum = $feed->getSource() ? FeedSource::tryFrom($feed->getSource()) : null;
 
         return new FeedResponseDTO(
             id: $feed->getId(),

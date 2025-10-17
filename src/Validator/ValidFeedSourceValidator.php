@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 class ValidFeedSourceValidator extends ConstraintValidator
 {
-    public function validate($value, Constraint $constraint): void
+    public function validate(mixed $value, Constraint $constraint): void
     {
         if (!$constraint instanceof ValidFeedSource) {
             throw new UnexpectedTypeException($constraint, ValidFeedSource::class);
@@ -27,7 +27,7 @@ class ValidFeedSourceValidator extends ConstraintValidator
 
         if (!FeedSource::tryFrom($value)) {
             $validValues = implode(', ', array_column(FeedSource::cases(), 'value'));
-            
+
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $value)
                 ->setParameter('{{ valid_values }}', $validValues)

@@ -33,7 +33,7 @@ enum FeedSource: string
     public static function getNameFromFlag(string $flag): ?string
     {
         $source = self::tryFrom($flag);
+
         return $source?->getName();
     }
-
 }

@@ -144,7 +144,6 @@ final class FeedsController extends AbstractController
         }
     }
 
-
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
         path: '/api/feeds',
@@ -394,6 +393,5 @@ final class FeedsController extends AbstractController
                 'message' => $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-    }    
+    }
 }
-

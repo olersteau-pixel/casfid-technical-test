@@ -134,7 +134,7 @@ final class ElMundoScraper implements ScraperInterface
         }
 
         if (empty($feeds)) {
-            $this->logger->warning('No feed found', ['source' => $this->getFlag()]);
+            $this->logger->warning('No feed found', ['source' => $this->getSourceFlag()]);
         }
 
         return $feeds;
@@ -155,7 +155,7 @@ final class ElMundoScraper implements ScraperInterface
             $imgNodes = $xpath->query('.//img', $parent);
 
             if ($imgNodes && $imgNodes->length > 0) {
-                /** @var \DOMElement  $img */
+                /** @var \DOMElement $img */
                 $img = $imgNodes->item(0);
                 $src = $img->getAttribute('src') ?:
                        $img->getAttribute('data-src') ?:

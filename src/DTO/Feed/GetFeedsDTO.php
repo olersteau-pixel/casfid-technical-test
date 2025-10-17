@@ -6,7 +6,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\ValidFeedSource;
 use App\Validator\ValidDateString;
 
-
 final class GetFeedsDTO
 {
     #[Assert\Type('numeric', message: 'El valor "{{ value }}" no es válido para el campo límite.')]

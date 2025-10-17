@@ -14,7 +14,6 @@ use Psr\Log\LoggerInterface;
 
 final class FeedsScraperService
 {
-
     public function __construct(
         private readonly iterable $scrapers,
         private readonly FeedsRepository $feedsRepository,
@@ -141,5 +140,5 @@ final class FeedsScraperService
         $feed->setCreatedAt(new \DateTime());
 
         return $feed;
-    }    
+    }
 }

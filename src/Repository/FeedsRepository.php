@@ -30,10 +30,10 @@ class FeedsRepository extends ServiceEntityRepository
     public function findByUrl(string $url): ?Feed
     {
         /** @var ?Feed $feed */
-        $feed = $this->findOneBy(['url' => $url]); 
+        $feed = $this->findOneBy(['url' => $url]);
+
         return $feed;
     }
-
 
     public function findAllCustom(?int $sqlResult = null, ?\DateTimeInterface $since = null, ?string $source = null): array
     {
@@ -63,8 +63,7 @@ class FeedsRepository extends ServiceEntityRepository
         }
 
         return $qb->getQuery()->getResult();
-    }    
-
+    }
 
     public function remove(Feed $feed, bool $flush = false): void
     {
@@ -73,5 +72,5 @@ class FeedsRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
-    }    
+    }
 }
