@@ -15,7 +15,8 @@ final class FeedResponseDTO
         public readonly ?string $sourceName,
         public readonly ?string $updatedAt,
         public readonly ?string $createdAt,
-    ) {}
+    ) {
+    }
 
     public function toArray(): array
     {

@@ -6,7 +6,6 @@ namespace App\Service\Scraper;
 
 interface ScraperInterface
 {
-
     public function scrape(int $limit = 5): array;
 
     public function getSourceName(): string;

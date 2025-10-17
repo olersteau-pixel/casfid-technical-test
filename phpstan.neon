@@ -1,0 +1,12 @@
+includes:
+    -  ./phpstan-baseline.neon
+parameters:
+    level: 8
+    excludePaths:
+        - /%currentWorkingDirectory%/tests/*
+        - /%currentWorkingDirectory%/migrations/*
+    ignoreErrors:
+        - identifier: missingType.iterableValue
+        - identifier: missingType.generics
+    parallel:
+    		maximumNumberOfProcesses: 4
