@@ -1,0 +1,70 @@
+services:
+    server_casfid_technical_test:
+        build:
+            context: .
+            dockerfile: ./docker/Dockerfile
+            args:
+                - UID=$UID
+                - UNAME=$UNAME
+        container_name: server_casfid_technical_test
+        ports:
+            - "8890:80"
+        volumes:
+            - ~/.ssh:/home/$UNAME/.ssh
+            - ../:/var/www
+
+    database_casfid_technical_test:
+        image: mysql:8.0
+        container_name: database_casfid_technical_test
+        restart: unless-stopped
+        tty: true
+        command: mysqld --sql_mode="NO_ENGINE_SUBSTITUTION" --max_connections=2000
+        ports:
+            - "33090:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_DATABASE: casfid_technical_test
+        volumes:
+            - mysqlbdata_casfid_technical_test:/var/lib/mysql
+
+    phpmyadmin_casfid_technical_test:
+        depends_on:
+            - database_casfid_technical_test
+        image: phpmyadmin:latest
+        container_name: phpmyadmin_casfid_technical_test
+        ports:
+            - "8889:80"
+        environment:
+            PMA_HOST: database_casfid_technical_test
+            UPLOAD_LIMIT: 100M
+
+    mongodb_casfid_technical_test:
+        image: mongo:6
+        container_name: mongodb_casfid_technical_test
+        restart: unless-stopped
+        ports:
+            - "27017:27017"
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: root
+            MONGO_INITDB_ROOT_PASSWORD: password
+        volumes:
+            - mongodata_casfid_technical_test:/data/db
+
+    mongoexpress_casfid_technical_test:
+        image: mongo-express:latest
+        container_name: mongoexpress_casfid_technical_test
+        restart: unless-stopped
+        depends_on:
+            - mongodb_casfid_technical_test
+        ports:
+            - "8081:8081"
+        environment:
+            ME_CONFIG_MONGODB_ADMINUSERNAME: root
+            ME_CONFIG_MONGODB_ADMINPASSWORD: password
+            ME_CONFIG_MONGODB_SERVER: mongodb_casfid_technical_test
+
+volumes:
+    mysqlbdata_casfid_technical_test:
+        driver: local
+    mongodata_casfid_technical_test:
+        driver: local
