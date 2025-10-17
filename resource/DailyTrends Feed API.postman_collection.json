@@ -1,0 +1,206 @@
+{
+	"info": {
+		"_postman_id": "b11e19ce-2635-436c-b206-993bf1dd1e68",
+		"name": "DailyTrends Feed API",
+		"description": "Colección completa de endpoints para gestión de feeds de noticias",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "47856309",
+		"_collection_link": "https://olivierlersteau.postman.co/workspace/Olivier-Lersteau's-Workspace~94a6fbba-8c8e-4d14-8bc2-d2152b501109/collection/47856309-b11e19ce-2635-436c-b206-993bf1dd1e68?action=share&source=collection_link&creator=47856309"
+	},
+	"item": [
+		{
+			"name": "Feeds",
+			"item": [
+				{
+					"name": "Get All Feeds",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/feeds?limit=5&date=2025-10-13&source=el pais",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"feeds"
+							],
+							"query": [
+								{
+									"key": "country",
+									"value": "ES",
+									"disabled": true
+								},
+								{
+									"key": "category",
+									"value": "technology",
+									"disabled": true
+								},
+								{
+									"key": "isActive",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								},
+								{
+									"key": "date",
+									"value": "2025-10-13"
+								},
+								{
+									"key": "source",
+									"value": "el pais"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Feed by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/feeds/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"feeds",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Feed",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"España afronta con “esperanza” el acuerdo de paz en Gaza\",\n    \"url\": \"https://elpais.com/espana/2025-10-13/espana-afronta-con-esperanza-el-acuerdo-de-paz-en-gaza.htmml\",\n    \"imageUrl\": \"https://elpais.com/iconos.jpg\",\n    \"source\": \"el_pais\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/feeds",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"feeds"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Feed",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"España afronta con “esperanza” el acuerdo de paz en Gaza\",\n    \"url\": \"https://elpais.com/espana/2025-10-13/espana-afronta-con-esperanza-el-acuerdo-de-paz-en-gaza.htmmmml\",\n    \"imageUrl\": \"https://elpais.com/iconos.jpg\",\n    \"source\": \"el_pais\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/feeds/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"feeds",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Feed",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/feeds/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"feeds",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "News scrape",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/feeds/scrape",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"feeds",
+						"scrape"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000"
+		}
+	]
+}
